@@ -82,8 +82,6 @@ public class AsteroidGame extends ApplicationAdapter {
             pos = p.cpy(); vel = v.cpy(); this.tier = tier;
             radius    = tier * 18f;
             rotation  = MathUtils.random(360f);
-//            rotation  = 0f;
-//            rotSpeed = 0;
             rotSpeed = MathUtils.randomSign() * MathUtils.random(30f, 90f) * (1f / tier);
 
             int sides = 8 + tier * 2;
