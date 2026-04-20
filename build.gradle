@@ -1,0 +1,52 @@
+// ── root build.gradle ──────────────────────────────────────
+plugins {
+    id 'java'
+}
+
+allprojects {
+    version = '1.0'
+    ext {
+        gdxVersion      = '1.12.1'
+        javaVersion     = '17'
+    }
+    repositories {
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+}
+
+// ── core module (game logic only, no backend) ──────────────
+project(':core') {
+    apply plugin: 'java-library'
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    }
+    java { sourceCompatibility = javaVersion; targetCompatibility = javaVersion }
+}
+
+// ── desktop module (LWJGL3 backend) ────────────────────────
+project(':desktop') {
+    apply plugin: 'java'
+
+    apply plugin: 'application'
+
+    application {
+        mainClass = 'com.example.asteroids.desktop.DesktopLauncher'
+    }
+
+    dependencies {
+        implementation project(':core')
+        implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    }
+
+    jar {
+        manifest.attributes 'Main-Class': 'com.example.asteroids.desktop.DesktopLauncher'
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+        archiveFileName = 'asteroid-game.jar'
+    }
+
+    java { sourceCompatibility = javaVersion; targetCompatibility = javaVersion }
+}
